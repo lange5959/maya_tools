@@ -9,7 +9,8 @@ import maya.OpenMaya as om
 
 
 def backup_before_save(*args):
-    om.MGlobal.displayWarning(u"没错，您的文件很健康")
+    if not pm.sceneName():
+        return
     current_path = om.MFileIO().currentFile()
     name = os.path.basename(current_path)
     parent_path = os.path.dirname(current_path)
@@ -29,6 +30,8 @@ def backup_before_save(*args):
 def auto_save(*args):
     """
     """
+    if not pm.sceneName():
+        return
     if pm.dgmodified():
         pm.saveFile()
     pm.inViewMessage(
@@ -38,7 +41,7 @@ def auto_save(*args):
 
 
 time_callback_id = om.MTimerMessage.addTimerCallback(
-    3*60, auto_save)
+    30*60, auto_save)
 
 
 id_before_save = om.MSceneMessage.addCallback(
@@ -46,4 +49,4 @@ id_before_save = om.MSceneMessage.addCallback(
 
 # 移除当前事件
 # om.MTimerMessage.removeCallback(id_before_save)
-# om.MTimerMessage.removeCallback(time_callback_id)
+# om.MMessage.removeCallback(time_callback_id)
